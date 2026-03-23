@@ -1,11 +1,15 @@
-import { createContext, useState } from "react";
+//componente per gestire le funzioni del carrello con aggiungere, rimuovere, pulire e aggiornare il carrello
+//aggiunto useEffect con localStorage
 
-// Fuori da tutto
+import { createContext, useEffect, useState } from "react";
+
 export const CartContext = createContext();
 
-// Componente Provider separato
 export const CartProvider = ({ children }) => {
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(() => {
+    const saved = localStorage.getItem("cart");
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const addToCart = (product) => {
     const exists = cart.find((item) => item.id === product.id);
@@ -34,6 +38,10 @@ export const CartProvider = ({ children }) => {
       ),
     );
   };
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+  }, [cart]);
 
   return (
     <CartContext.Provider
